@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Packj.dev Audit
+inputs: 
+  OSSIEBOT_ID:
+    required: true
+  REPO_TOKEN:
+    required: true
+runs:
+  using: composite
+  steps: 
+    # Install OssiBOT
+    - name: install ossie bot client
+      run: pip3 install ossie
+      shell: bash
+
+    # Audit the Repository
+    - name: Audit project dependencies
+      run: |
+        ossie audit --id ${{ inputs.OSSIEBOT_ID }} --project ${{ github.workspace }}
+        echo "ISSUE_REQUIRED=$(cat /tmp/issue_required.txt)" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=$(cat /tmp/issue_title.txt)" >> $GITHUB_ENV
+        echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+        echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
+        echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+      shell: bash
+
+    - name: create issue if ISSUE_REQUIRED is set
+      if: ${{ env.ISSUE_REQUIRED == 'YES'}}
+      uses: rishabhgupta/git-action-issue@v2
+      with:
+        token: ${{ inputs.REPO_TOKEN }}
+        title: ${{ env.ISSUE_TITLE }}
+        body: ${{ env.ISSUE_BODY }}
