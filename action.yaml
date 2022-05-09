@@ -22,8 +22,8 @@ runs:
         echo "ISSUE_TITLE=$(cat /tmp/issue_title.txt)" >> $GITHUB_ENV
         echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
         echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
-        echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
-        strace ls 2>> $GITHUB_ENV
+        cat /tmp/issue_body.txt >> $GITHUB_ENV
+        #strace ls 2>> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
       shell: bash
 
