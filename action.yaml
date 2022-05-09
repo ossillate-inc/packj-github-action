@@ -19,7 +19,7 @@ runs:
       run: |
         ossie audit --id ${{ inputs.OSSIEBOT_ID }} --project ${{ github.workspace }}
         echo "ISSUE_REQUIRED=$(cat /tmp/issue_required.txt)" >> $GITHUB_ENV
-        echo "ISSUE_TITLE=$(cat /tmp/issue_title.txt)" >> $GITHUB_ENV
+        #echo "ISSUE_TITLE=$(cat /tmp/issue_title.txt)" >> $GITHUB_ENV
         echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
         #echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
         #echo "#######"
@@ -27,7 +27,8 @@ runs:
         #echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
         
         lines=$(wc -l /tmp/issue_body.txt | cut -f1 -d ' ')
-        echo "Found issues with $(($lines - 1)) dependencies" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=Ossie: $(($lines - 1) Risky/Malicious/Undesirable Dependencies found" >> $GITHUB_ENV
+        #echo "Found issues with $(($lines - 1)) dependencies" >> $GITHUB_ENV
         last_line=$(tail -n1 /tmp/issue_body.txt)
         echo "$last_line" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
