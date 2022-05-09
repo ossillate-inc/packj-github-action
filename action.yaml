@@ -22,7 +22,7 @@ runs:
         #echo "ISSUE_TITLE=$(cat /tmp/issue_title.txt)" >> $GITHUB_ENV
         
         lines=$(wc -l /tmp/issue_body.txt | cut -f1 -d ' ')
-        echo "ISSUE_TITLE=Ossie: $(($lines - 1)) Risky/Malicious/Undesirable Dependencies found" >> $GITHUB_ENV
+        echo "ISSUE_TITLE=$(($lines - 1)) Problematic Dependencies found" >> $GITHUB_ENV
         
         echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
         #echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
