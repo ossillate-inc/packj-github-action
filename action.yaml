@@ -32,6 +32,8 @@ runs:
         #echo "$(cat /tmp/issue_body.txt)"
         #echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
         
+        [[ ${lines} > 6 ]] && echo "and more..." >> $GITHUB_ENV
+        
         last_line=$(tail -n1 /tmp/issue_body.txt)
         echo "$last_line" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
