@@ -11,7 +11,7 @@ runs:
   steps: 
     # Install OssiBOT
     - name: install ossie bot client
-      run: pip3 install ossie
+      run: pip3 install git+https://github.com/ossillate-inc/ossie-pypi.git@issue_text
       shell: bash
 
     # Audit the Repository
@@ -25,12 +25,13 @@ runs:
         
         echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
         
-        #echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
+        echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
+        
+        echo "$(head -n6 /tmp/issue_body.txt)" >> $GITHUB_ENV
         #echo "#######"
         #echo "$(cat /tmp/issue_body.txt)"
         #echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
         
-
         last_line=$(tail -n1 /tmp/issue_body.txt)
         echo "$last_line" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
