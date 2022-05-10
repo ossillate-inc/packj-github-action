@@ -27,7 +27,7 @@ runs:
         
         echo "<a href=\"https://packj.dev\"><img src=\"https://packj.dev/static/img/box-package.svg\" width=\"80\"></a>" >> $GITHUB_ENV
         
-        echo "$(head -n -1 /tmp/issue_body.txt)" >> $GITHUB_ENV
+        echo "$(head -n -1 /tmp/issue_body.txt | head -n5)" >> $GITHUB_ENV
         #echo "#######"
         #echo "$(cat /tmp/issue_body.txt)"
         #echo "$(cat /tmp/issue_body.txt)" >> $GITHUB_ENV
