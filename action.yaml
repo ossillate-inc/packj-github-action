@@ -21,7 +21,7 @@ runs:
         echo "ISSUE_REQUIRED=$(cat /tmp/issue_required.txt)" >> $GITHUB_ENV
         
         lines=$(wc -l /tmp/issue_body.txt | cut -f1 -d ' ')
-        echo "ISSUE_TITLE=$(($lines - 1)) Undesirable\/Risky Dependencies found" >> $GITHUB_ENVV
+        echo "ISSUE_TITLE=$(($lines - 1)) Undesirable/Risky Dependencies found" >> $GITHUB_ENV
         
         echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
         
