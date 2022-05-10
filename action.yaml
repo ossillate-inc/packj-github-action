@@ -1,6 +1,7 @@
 # This is a basic workflow to help you get started with Actions
 
 name: Packj.dev Audit
+description: Use ossie to identify weaknesses in your Python dependencies
 inputs: 
   OSSIEBOT_ID:
     required: true
