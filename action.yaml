@@ -10,8 +10,7 @@ branding:
   icon: "package" # icon name from Feather open source icons pack
   color: "orange"
 
-on:
-  pull_request:
+on: [pull_request]
 
 permissions:
   contents: read
