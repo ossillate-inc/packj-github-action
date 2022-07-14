@@ -1,17 +1,32 @@
-# This is a basic workflow to help you get started with Actions
+# Action's main info
+name: "Packj Audit"
+description: "Use Packj to identify malicious/risky Python PyPI, NPM, and RubyGems dependencies"
 
-name: Packj.dev Audit
-description: Use ossie to identify weaknesses in your Python dependencies
+# Action's author name
+author: "Ossillate, Inc."
+
+# Action's branding data for GitHub Marketplace
+branding:
+  icon: "package" # icon name from Feather open source icons pack
+  color: "orange"
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  
 inputs: 
   OSSIEBOT_ID:
     required: true
   REPO_TOKEN:
     required: true
+    
 runs:
   using: composite
   steps: 
-    # Install OssiBOT
-    - name: install ossie bot client
+    # Install Packj tool
+    - name: install Packj.dev client
       run: pip3 install ossie
       shell: bash
 
