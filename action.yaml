@@ -1,6 +1,6 @@
 # Action's main info
 name: "Packj Audit"
-description: "Use Packj to identify malicious/risky Python PyPI, NPM, and RubyGems dependencies"
+description: "Use Packj to identify malicious and other \"risky\" open-source software dependencies"
 
 # Action's author name
 author: "Ossillate, Inc."
@@ -16,96 +16,61 @@ permissions:
   contents: read
   
 inputs: 
+  REPO_TOKEN:
+    required: true
   DEPENDENCY_FILES:
     required: true
     
 runs:
   using: composite
   steps: 
-    # Collect env details
-    - name: Test vars
-      if: ${{ false }}
-      shell: bash
-      run: |
-        echo "HR == ${{ github.head_ref }}"
-        echo ${{ github.ref_name }}
-        echo ${{ github.base_ref }}
-        if ${{ github.event_name }} == "pull_request"
-        then 
-          echo "PR=true" >> $GITHUB_ENV
-        else
-          echo "PR=false" >> $GITHUB_ENV
-        fi
-          
-    # Install Packj tool
-    - name: Checkout Packj repo
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout repo
       uses: actions/checkout@v3
-      with:
-        repository: ossillate-inc/packj
-        path: packj
 
-    - name: Run deps with packj
+    # Audit deps
+    - name: Auditing deps with Packj
       shell: bash
       run: |
-        cat /home/runner/work/_temp/*.sh
-        sudo apt install python3-testresources
-        pip3 install -r packj/requirements.txt
-        pip3 install --upgrade urllib3
-        
-        echo ${{ inputs.DEPENDENCY_FILES }}
-        #IFS=',' read -ra DEPENDENCIES <<< ${{ inputs.DEPENDENCY_FILES }}
-        #input_files=()
-        #echo "---$DEPENDENCIES"
-        #
-        #for i in "${DEPENDENCIES[@]}"
-        #  do 
-        #    cp $i packj/
-        #    filename=$(basename $i); 
-        #    input_files+=$filename,
-        #  done
-        #
-        #echo $input_files
-        #input_files=${input_files::-1}
-        #echo $input_files
-        #ls packj/
-        cd packj/ && python3 main.py -f ${{ inputs.DEPENDENCY_FILES }} > /tmp/audit-${{ github.run_id }}.txt && cd ..
-        echo "printing html file"
-
-        html_report=$(ls /tmp/packj_audit_/*.html)
-        echo $html_report
-
-        echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
-        cat $html_report >> $GITHUB_ENV
-        #echo "<h2> Packj security scan report </h2>" >> $GITHUB_ENV
-        #run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        #commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-        #echo "Created by <a href=$run_url>workflow run #${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
-        
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input_files=()
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              pm_name=$(echo $item | cut -f1 -d:)
+              dep_file=$(echo $item | cut -f2 -d:)
+              path=${{ github.workspace }}/$dep_file
+              if [ -f $path ]; then
+                input_files+=$pm_name":"$path,
+              fi
+            fi
+          done
+        if [ ! -z input_files ]; then
+          input=$(echo $input_files | sed 's/,/ /g')
+          pip3 install pyOpenSSL --upgrade && pip3 install packj && packj audit -f $input
+        fi
+ 
+    # Analyze report
+    - name: Analyze audit report
+      shell: bash
+      run: |
+        echo "COMMENT_BODY<<EOF" >> $GITHUB_ENV
+        if [ -f /tmp/packj_audit_*/*.html ]; then
+          html_report=$(ls /tmp/packj_audit_*/*.html)
+          cat $html_report | head -n -2 | tail -n +10 | sed 's/^[\s\t\r]*//g' >> $GITHUB_ENV
+        else
+          echo "<h4>Failed to perform Packj audit! Refer to workflow run for details</h4>" >> /$GITHUB_ENV
+        fi
+        run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+        echo "Created by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        
-        echo "ISSUE_TITLE=Risky packages found" >> $GITHUB_ENV
-              
-    - name: create issue if ISSUE_REQUIRED is set
-      if: ${{ env.ISSUE_REQUIRED == 'YES'}}
-      uses: rishabhgupta/git-action-issue@v2
-      with:
-        token: ${{ inputs.REPO_TOKEN }}
-        title: ${{ env.ISSUE_TITLE }}
-        body: ${{ env.ISSUE_BODY }}
-    - name: create issue if ISSUE_REQUIRED is set
-      if: ${{ github.head_ref == '' }}
-      #if: ${{ env.ISSUE_REQUIRED == 'YES'}}
-      #if: ${{ false }}
-      uses: rishabhgupta/git-action-issue@v2
-      with:
-        token: ${{ inputs.REPO_TOKEN }}
-        title: ${{ env.ISSUE_TITLE }}
-        body: ${{ env.ISSUE_BODY }}
-        
+
+    # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref }}
-      #if: ${{ false }}
       uses: thollander/actions-comment-pull-request@v1
       with:
-        message: ${{ env.ISSUE_BODY }}
+        message: ${{ env.COMMENT_BODY }}
         GITHUB_TOKEN: ${{ inputs.REPO_TOKEN }}
