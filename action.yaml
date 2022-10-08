@@ -55,7 +55,7 @@ runs:
     - name: Analyze audit report
       shell: bash
       run: |
-        echo "COMMENT_BODY<<EOF" >> $GITHUB_ENV
+        echo "BODY<<EOF" >> $GITHUB_ENV
         if [ -f /tmp/packj_audit_*/*.html ]; then
           html_report=$(ls /tmp/packj_audit_*/*.html)
           cat $html_report | head -n -2 | tail -n +10 | sed 's/^[\s\t\r]*//g' >> $GITHUB_ENV
@@ -65,12 +65,21 @@ runs:
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
         echo "Created by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
+        echo "TITLE=Risky packages found" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
+    - name: create issue if ISSUE_REQUIRED is set
+      if: ${{ github.head_ref == '' }}
+      uses: rishabhgupta/git-action-issue@v2
+      with:
+        token: ${{ inputs.REPO_TOKEN }}
+        title: ${{ env.TITLE }}
+        body: ${{ env.BODY }}
+        
     # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref }}
       uses: thollander/actions-comment-pull-request@v1
       with:
-        message: ${{ env.COMMENT_BODY }}
+        message: ${{ env.BODY }}
         GITHUB_TOKEN: ${{ inputs.REPO_TOKEN }}
