@@ -65,7 +65,6 @@ runs:
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
         echo "Created by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
-        echo "TITLE=Risky packages found" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
         echo "TITLE=Risky packages found" >> $GITHUB_ENV
 
