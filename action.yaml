@@ -66,8 +66,9 @@ runs:
         commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
         echo "Created by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        echo "TITLE=Risky packages found" >> $GITHUB_ENV
+        echo "TITLE=Packj audit found risky dependencies!" >> $GITHUB_ENV
 
+    # Create an issue for 'push'
     - name: create issue if ISSUE_REQUIRED is set
       if: ${{ github.head_ref == '' }}
       uses: rishabhgupta/git-action-issue@v2
