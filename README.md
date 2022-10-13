@@ -8,7 +8,7 @@ Add *Packj* audit to your workflow to flag malicious and other "risky" open-sour
 
 ```yaml
 # This is a basic workflow to help you get started with Actions
-name: Packj audit demo
+name: Packj security audit
 
 # Controls when the workflow will run
 on:
