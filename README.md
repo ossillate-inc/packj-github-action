@@ -1,6 +1,8 @@
 # <img src="https://raw.githubusercontent.com/feathericons/feather/master/icons/package.svg" width="45"/>&nbsp;<span style="font-size: 36px"> Packj flags malicious/risky open-source packages</span> 
 
-Add *Packj* audit to your workflow to flag malicious and other "risky" open-source software dependencies. Packj (pronounced _package_) is an open-source [tool](https://github.com/ossillate-inc/packj) that powers our large-scale security analysis platform [Packj.dev](https://packj.dev) to continuously vets packages and provides free reports.
+Add *Packj* runner to your workflow to audit your pull requests for malicious/risky NPM/PyPI/Ruby dependencies. 
+
+Powered by our open-source tool [Packj](https://github.com/ossillate-inc/packj).
 
 [![GitHub Stars](https://img.shields.io/github/stars/ossillate-inc/packj?style=social)](https://github.com/ossillate-inc/packj/stargazers) [![Discord](https://img.shields.io/discord/910733124558802974?label=Discord)](https://discord.gg/8hx3yEtF) ![](https://img.shields.io/badge/status-beta-yellow)
 
@@ -32,6 +34,7 @@ jobs:
       - name: Audit dependencies
         uses: ossillate-inc/packj.dev@0.0.3-beta
         with:
+          # TODO: replace with your dependency files in the repo
           DEPENDENCY_FILES: pypi:requirements.txt,npm:package.json,rubygems:Gemfile
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
