@@ -1,6 +1,6 @@
-# <img src="https://raw.githubusercontent.com/feathericons/feather/master/icons/package.svg" width="45"/>&nbsp;<span style="font-size: 36px"> Packj runner flags malicious/risky open-source deps</span> 
+# <img src="https://raw.githubusercontent.com/feathericons/feather/master/icons/package.svg" width="45"/>&nbsp;<span style="font-size: 36px"> Packj flags malicious/risky open-source dependencies</span> 
 
-Add *Packj* runner to your workflow to audit your pull requests for malicious/risky NPM/PyPI/Ruby dependencies. 
+Add *Packj* to your workflow to audit your pull requests for malicious/risky NPM/PyPI/Ruby dependencies. 
 
 Powered by our open-source tool [Packj](https://github.com/ossillate-inc/packj).
 
