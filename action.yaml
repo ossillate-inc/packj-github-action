@@ -1,6 +1,6 @@
 # Action's main info
-name: "Packj Audit"
-description: "Use Packj to identify malicious and other \"risky\" open-source software dependencies"
+name: "Packj"
+description: "Use Packj to avoid malicious and other \"risky\" open-source software dependencies"
 
 # Action's author name
 author: "Ossillate, Inc."
