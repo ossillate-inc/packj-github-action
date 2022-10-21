@@ -45,7 +45,7 @@ jobs:
 
 ### Output ###
 
-Packj will comment on the PR if any risky dependencies are found. See example [PR run](https://github.com/ossillate-inc/packj-github-action-demo/pull/3).
+Packj will comment on the PR if any risky dependencies are found. See example [PR run](https://github.com/ossillate-inc/packj-github-action-demo/pull/3#issuecomment-1274797138).
 
 # How it works #
 
