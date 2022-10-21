@@ -22,7 +22,7 @@ on:
 jobs:
 
   # This workflow contains a single job called "packj-audit"
-  packj:
+  packj-security-audit:
 
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
