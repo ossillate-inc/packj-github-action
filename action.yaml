@@ -1,5 +1,5 @@
 # Action's main info
-name: "Packj"
+name: "Packj Security Audit"
 description: "Use Packj to avoid malicious and other \"risky\" open-source software dependencies"
 
 # Action's author name
