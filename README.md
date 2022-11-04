@@ -6,7 +6,31 @@ Powered by our open-source tool [Packj](https://github.com/ossillate-inc/packj).
 
 [![GitHub Stars](https://img.shields.io/github/stars/ossillate-inc/packj?style=social)](https://github.com/ossillate-inc/packj/stargazers) [![Discord](https://img.shields.io/discord/910733124558802974?label=Discord)](https://discord.gg/8hx3yEtF) ![](https://img.shields.io/badge/status-beta-yellow)
 
-# Example usage #
+# Example output
+
+Packj will comment on the PR if any risky dependencies are found. See example [Pull Request audit](https://github.com/ossillate-inc/packj-github-action-demo/pull/3#issuecomment-1274797138). 
+
+<details>
+	<summary><b>Show Example PR Screenshot</b></summary>
+
+![Screen Shot 2022-11-04 at 5 18 25 PM](https://user-images.githubusercontent.com/1142085/200083068-e76265f3-9b36-43d5-837a-87409329307d.png)
+</details>
+
+# How to use #
+
+Just add the following to your workflow:
+
+```yaml
+- name: Packj Security Audit
+  uses: ossillate-inc/packj-github-action@0.0.4-beta
+    with:
+      # TODO: replace with your dependency files in the repo
+      DEPENDENCY_FILES: pypi:requirements.txt,npm:package.json,rubygems:Gemfile
+      REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }
+```
+
+<details>
+	<summary><b>Show a complete example</b></summary> 
 
 ```yaml
 # This is a basic workflow to help you get started with Actions
@@ -38,14 +62,11 @@ jobs:
           DEPENDENCY_FILES: pypi:requirements.txt,npm:package.json,rubygems:Gemfile
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+</details>
 
 ### Inputs ###
 - **DEPENDENCY_FILES** -- _Packj takes open-source dependency files as input (e.g., npm:package.json). Multiple comma-separated files could be specified. Please see example usage above.
 - **REPO_TOKEN**:  -- specific github token, `secrets.GITHUB_TOKEN` is used by default (Github Action Runner)
-
-### Output ###
-
-Packj will comment on the PR if any risky dependencies are found. See example [PR run](https://github.com/ossillate-inc/packj-github-action-demo/pull/3#issuecomment-1274797138).
 
 # How it works #
 
