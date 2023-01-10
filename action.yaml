@@ -50,7 +50,24 @@ runs:
 
     - name: Auditing deps with Packj
       shell: bash
-      run: python3 ./packj/main.py audit -f ${{ inputs.DEPENDENCY_FILES }}
+      run: |
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input_files=()
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              pm_name=$(echo $item | cut -f1 -d:)
+              dep_file=$(echo $item | cut -f2 -d:)
+              path=${{ github.workspace }}/$dep_file
+              if [ -f $path ]; then
+                input_files+=$pm_name":"$path,
+              fi
+            fi
+          done
+        if [ ! -z input_files ]; then
+          input=$(echo $input_files | sed 's/,/ /g')
+          python3 ./packj/main.py audit -f $input
+        fi
 
     - name: Analyze audit report
       shell: bash
@@ -68,6 +85,7 @@ runs:
         echo "EOF" >> $GITHUB_ENV
         echo "TITLE=Packj audit found risky dependencies!" >> $GITHUB_ENV
 
+    # Create an issue for 'push'
     - name: create issue if ISSUE_REQUIRED is set
       if: ${{ github.head_ref == '' }}
       uses: rishabhgupta/git-action-issue@v2
@@ -76,6 +94,7 @@ runs:
         title: ${{ env.TITLE }}
         body: ${{ env.BODY }}
 
+    # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref }}
       uses: thollander/actions-comment-pull-request@v2
