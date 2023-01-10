@@ -1,6 +1,6 @@
 # Action's main info
 name: "Packj Security Audit"
-description: "Use Packj to avoid malicious and other \"risky\" open-source software dependencies"
+description: 'Use Packj to avoid malicious and other "risky" open-source software dependencies'
 
 # Action's author name
 author: "Ossillate, Inc."
@@ -10,24 +10,44 @@ branding:
   icon: "package" # icon name from Feather open source icons pack
   color: "orange"
 
-permissions:
-  contents: read
-  
-inputs: 
-  REPO_TOKEN:
-    required: true
+inputs:
   DEPENDENCY_FILES:
+    description: A string params passed to Packj for auditing
     required: true
-    
-runs:
-  using: composite
-  steps: 
+  REPO_TOKEN:
+    description: Your repo GITHUB_TOKEN
+    required: true
 
+runs:
+  using: "composite"
+
+  steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout repo
+    - name: Check out repository code
       uses: actions/checkout@v3
 
-    # Audit deps
+    - name: Setup Python & pip
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: pip
+
+    - name: Clone Packj repo
+      shell: bash
+      run: git clone https://github.com/ossillate-inc/packj
+
+    - name: Create virtual environment
+      shell: bash
+      run: python3 -m venv venv
+
+    - name: Activate virtual environment
+      shell: bash
+      run: source venv/bin/activate
+
+    - name: Install Packj's dependencies
+      shell: bash
+      run: pip3 install -r ./packj/requirements.txt
+
     - name: Auditing deps with Packj
       shell: bash
       run: |
@@ -46,10 +66,9 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          pip3 install pyOpenSSL --upgrade && pip3 install packj && packj audit -f $input
+          python3 ./packj/main.py audit -f $input
         fi
- 
-    # Analyze report
+
     - name: Analyze audit report
       shell: bash
       run: |
@@ -74,11 +93,10 @@ runs:
         token: ${{ inputs.REPO_TOKEN }}
         title: ${{ env.TITLE }}
         body: ${{ env.BODY }}
-        
+
     # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref }}
-      uses: thollander/actions-comment-pull-request@v1
+      uses: thollander/actions-comment-pull-request@v2
       with:
         message: ${{ env.BODY }}
-        GITHUB_TOKEN: ${{ inputs.REPO_TOKEN }}
