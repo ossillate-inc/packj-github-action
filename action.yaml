@@ -39,6 +39,8 @@ runs:
       with:
         python-version: "3.10"
         cache: pip
+
+    - shell: bash
       run: pip install -r requirements.txt
 
     - name: Create virtual environment
