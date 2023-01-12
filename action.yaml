@@ -26,23 +26,20 @@ runs:
     - name: Check out repository code
       uses: actions/checkout@v3
 
-    - name: LOGGING!!!
-      shell: bash
-      run: pwd && ls -al && python3 -V
-
-    # - name: Setup Python & pip
-    #   uses: actions/setup-python@v4
-    #   with:
-    #     python-version: "3.10"
-    #     cache: pip
-
     - name: Clone Packj repo
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
 
     - name: Change directory to /packj
       shell: bash
-      run: cd packj && pwd && ls -al
+      run: cd packj
+
+    - name: Setup Python & install Packj dependencies
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: pip
+      run: pip install -r requirements.txt
 
     - name: Create virtual environment
       shell: bash
@@ -52,9 +49,9 @@ runs:
       shell: bash
       run: source venv/bin/activate
 
-    - name: Install Packj's dependencies
-      shell: bash
-      run: pip3 -V && pip3 install -r ./requirements.txt
+    # - name: Install Packj's dependencies
+    #   shell: bash
+    #   run: pip3 -V && pip3 install -r ./requirements.txt
 
     - name: Auditing deps with Packj
       shell: bash
