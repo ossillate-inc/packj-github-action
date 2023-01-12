@@ -54,7 +54,7 @@ runs:
 
     - name: Install Packj's dependencies
       shell: bash
-      run: pip3 install -r requirements.txt
+      run: pip3 -V && pip3 install -r ./requirements.txt
 
     - name: Auditing deps with Packj
       shell: bash
