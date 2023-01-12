@@ -50,7 +50,7 @@ runs:
 
     - name: Install Packj's dependencies
       shell: bash
-      run: pip3 -V && pwd && ls -al && pip3 install -r requirements.txt
+      run: ls -al && pip3 install -r ./packj/requirements.txt
 
     - name: Auditing deps with Packj
       shell: bash
@@ -71,7 +71,7 @@ runs:
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
           echo $input
-          python3 main.py audit -f $input
+          python3 ./packj/main.py audit -f $input
         fi
 
     - name: Analyze audit report
