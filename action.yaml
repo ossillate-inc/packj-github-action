@@ -28,13 +28,13 @@ runs:
 
     - name: LOGGING!!!
       shell: bash
-      run: pwd && ls -al
+      run: pwd && ls -al && python3 -V
 
-    - name: Setup Python & pip
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
-        cache: pip
+    # - name: Setup Python & pip
+    #   uses: actions/setup-python@v4
+    #   with:
+    #     python-version: "3.10"
+    #     cache: pip
 
     - name: Clone Packj repo
       shell: bash
