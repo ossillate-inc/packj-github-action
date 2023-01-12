@@ -36,6 +36,10 @@ runs:
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
 
+    - name: Change directory to /packj
+      shell: bash
+      run: cd packj
+
     - name: Create virtual environment
       shell: bash
       run: python3 -m venv venv
@@ -46,7 +50,7 @@ runs:
 
     - name: Install Packj's dependencies
       shell: bash
-      run: pip3 install -r ./packj/requirements.txt
+      run: pip3 install -r requirements.txt
 
     - name: Auditing deps with Packj
       shell: bash
@@ -66,7 +70,8 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          python3 ./packj/main.py audit -f $input
+          echo $input
+          python3 main.py audit -f $input
         fi
 
     - name: Analyze audit report
