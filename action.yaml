@@ -26,6 +26,10 @@ runs:
     - name: Check out repository code
       uses: actions/checkout@v3
 
+    - name: LOGGING!!!
+      shell: bash
+      run: pwd && ls -al
+
     - name: Setup Python & pip
       uses: actions/setup-python@v4
       with:
