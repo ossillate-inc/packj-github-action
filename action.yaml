@@ -26,15 +26,15 @@ runs:
     - name: Check out repository code
       uses: actions/checkout@v3
 
+    - name: Clone Packj repo
+      shell: bash
+      run: git clone https://github.com/ossillate-inc/packj
+
     - name: Setup python & pip
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
         cache: pip
-
-    - name: Clone Packj repo
-      shell: bash
-      run: git clone https://github.com/ossillate-inc/packj
 
     - name: Create virtual environment
       shell: bash
