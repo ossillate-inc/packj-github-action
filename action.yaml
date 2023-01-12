@@ -42,7 +42,7 @@ runs:
 
     - name: Change directory to /packj
       shell: bash
-      run: cd packj
+      run: cd packj && pwd && ls -al
 
     - name: Create virtual environment
       shell: bash
