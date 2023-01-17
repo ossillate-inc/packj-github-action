@@ -22,6 +22,14 @@ runs:
   using: "composite"
 
   steps:
+    - name: "Check for new changes in dependencies"
+      uses: brettcannon/check-for-changed-files@v1
+      with:
+        file-pattern: |
+          package.json
+          requirements.txt
+        failure-message: "No changes in ${file-pattern}"
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Check out repository code
       uses: actions/checkout@v3
