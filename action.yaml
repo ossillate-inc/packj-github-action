@@ -67,6 +67,7 @@ runs:
               pm_name=$(echo $item | cut -f1 -d:)
               dep_file=$(echo $item | cut -f2 -d:)
               path=${{ github.workspace }}/$dep_file
+              echo $path
               if [ -f $path ]; then
                 input_files+=$pm_name":"$path,
               fi
