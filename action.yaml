@@ -22,6 +22,10 @@ runs:
   using: "composite"
 
   steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
     - name: Parse dependency files
       id: parse-dependency-files
       shell: bash
@@ -40,24 +44,18 @@ runs:
             fi
           done
         if [ ! -z input_files ]; then
-          echo "CHANGED_FILES=$input_files" >> $GITHUB_OUTPUT
+          echo "CHANGED_FILES=$input_files" >> $GITHUB_ENV
         fi
 
     - name: Get output
       shell: bash
-      run: echo "The changed files are ${{ steps.parse-dependency-files.outputs.CHANGED_FILES }}"
+      run: echo "The changed files are ${{ env.CHANGED_FILES }}"
 
     - name: "Check for new changes in dependencies"
       uses: brettcannon/check-for-changed-files@v1
       with:
-        file-pattern: |
-          package.json
-          requirements.txt
+        file-pattern: ${{ env.CHANGED_FILES }}
         failure-message: "No changes in ${file-pattern}"
-
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Check out repository code
-      uses: actions/checkout@v3
 
     - name: Clone Packj repo
       shell: bash
