@@ -22,6 +22,31 @@ runs:
   using: "composite"
 
   steps:
+    - name: Parse dependency files
+      id: parse-dependency-files
+      shell: bash
+      run: |
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input_files=()
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              pm_name=$(echo $item | cut -f1 -d:)
+              dep_file=$(echo $item | cut -f2 -d:)
+              path=${{ github.workspace }}/$dep_file
+              if [ -f $path ]; then
+                input_files+=$pm_name":"$path,
+              fi
+            fi
+          done
+        if [ ! -z input_files ]; then
+          echo "CHANGED_FILES=$input_files" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Get output
+      shell: bash
+      run: echo "The changed files are ${{ steps.parse-dependency-files.outputs.CHANGED_FILES }}"
+
     - name: "Check for new changes in dependencies"
       uses: brettcannon/check-for-changed-files@v1
       with:
@@ -67,7 +92,6 @@ runs:
               pm_name=$(echo $item | cut -f1 -d:)
               dep_file=$(echo $item | cut -f2 -d:)
               path=${{ github.workspace }}/$dep_file
-              echo $path
               if [ -f $path ]; then
                 input_files+=$pm_name":"$path,
               fi
@@ -75,7 +99,6 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          echo $input
           python3 ./packj/main.py audit -f $input
         fi
 
