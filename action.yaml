@@ -31,20 +31,23 @@ runs:
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
-        input_files=()
+        file_pattern=""
+
         for item in $input
           do
             if [[ $item == *":"* ]]; then
               pm_name=$(echo $item | cut -f1 -d:)
               dep_file=$(echo $item | cut -f2 -d:)
+              
               path=${{ github.workspace }}/$dep_file
               if [ -f $path ]; then
-                input_files+=$pm_name":"$path,
+                file_pattern+="$dep_file \n"
               fi
             fi
           done
+
         if [ ! -z input_files ]; then
-          echo "CHANGED_FILES=$input_files" >> $GITHUB_ENV
+          echo -e "FILE_PATTERN=$file_pattern" >> $GITHUB_ENV
         fi
 
     - name: Get output
