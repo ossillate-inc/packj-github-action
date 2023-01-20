@@ -31,7 +31,8 @@ runs:
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
-        file_pattern=""
+
+        echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
 
         for item in $input
           do
@@ -41,14 +42,12 @@ runs:
 
               path=${{ github.workspace }}/$dep_file
               if [ -f $path ]; then
-                file_pattern+="$dep_file \n"
+                echo $dep_file >> $GITHUB_ENV
               fi
             fi
           done
 
         if [ ! -z input_files ]; then
-          echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
-          echo $file_pattern >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
         fi
 
