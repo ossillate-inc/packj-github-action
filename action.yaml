@@ -57,8 +57,8 @@ runs:
     - name: "Check for new changes in dependencies"
       uses: brettcannon/check-for-changed-files@v1
       with:
-        file-pattern: $CHANGED_FILES
-        failure-message: "No changes in ${file-pattern}"
+        file-pattern: ${{ env.CHANGED_FILES }}
+        failure-message: "No changes in ${ file-pattern }"
       env:
         CHANGED_FILES: |
           package.json
