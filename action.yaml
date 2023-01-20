@@ -27,7 +27,6 @@ runs:
       uses: actions/checkout@v3
 
     - name: Parse dependency files
-      id: parse-dependency-files
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
