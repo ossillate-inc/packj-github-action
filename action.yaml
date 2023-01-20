@@ -26,39 +26,43 @@ runs:
     - name: Check out repository code
       uses: actions/checkout@v3
 
-    - name: Parse dependency files
-      id: parse-dependency-files
-      shell: bash
-      run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
-        file_pattern=""
+    # - name: Parse dependency files
+    #   id: parse-dependency-files
+    #   shell: bash
+    #   run: |
+    #     input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
+    #     file_pattern=""
 
-        for item in $input
-          do
-            if [[ $item == *":"* ]]; then
-              pm_name=$(echo $item | cut -f1 -d:)
-              dep_file=$(echo $item | cut -f2 -d:)
-              
-              path=${{ github.workspace }}/$dep_file
-              if [ -f $path ]; then
-                file_pattern+="$dep_file \n"
-              fi
-            fi
-          done
+    #     for item in $input
+    #       do
+    #         if [[ $item == *":"* ]]; then
+    #           pm_name=$(echo $item | cut -f1 -d:)
+    #           dep_file=$(echo $item | cut -f2 -d:)
 
-        if [ ! -z input_files ]; then
-          echo -e "FILE_PATTERN=$file_pattern" >> $GITHUB_ENV
-        fi
+    #           path=${{ github.workspace }}/$dep_file
+    #           if [ -f $path ]; then
+    #             file_pattern+="$dep_file \n"
+    #           fi
+    #         fi
+    #       done
 
-    - name: Get output
-      shell: bash
-      run: echo "The changed files are ${{ env.CHANGED_FILES }}"
+    #     if [ ! -z input_files ]; then
+    #       echo -e "FILE_PATTERN=$file_pattern" >> $GITHUB_ENV
+    #     fi
+
+    # - name: Get output
+    #   shell: bash
+    #   run: echo "The changed files are ${{ env.CHANGED_FILES }}"
 
     - name: "Check for new changes in dependencies"
       uses: brettcannon/check-for-changed-files@v1
       with:
         file-pattern: ${{ env.CHANGED_FILES }}
         failure-message: "No changes in ${file-pattern}"
+      env:
+        CHANGED_FILES: |
+          package.json
+          requirements.txt
 
     - name: Clone Packj repo
       shell: bash
