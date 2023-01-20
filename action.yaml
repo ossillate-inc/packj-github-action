@@ -51,10 +51,6 @@ runs:
           echo "EOF" >> $GITHUB_ENV
         fi
 
-    - name: Get output
-      shell: bash
-      run: echo "The changed files pattern is ${{ env.FILE_PATTERN }}"
-
     - name: "Check for new changes in dependencies"
       uses: brettcannon/check-for-changed-files@v1
       with:
