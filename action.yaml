@@ -26,15 +26,45 @@ runs:
     - name: Check out repository code
       uses: actions/checkout@v3
 
-    - name: Setup Python & pip
-      uses: actions/setup-python@v4
+    - name: Parse dependency files
+      shell: bash
+      run: |
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
+
+        echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
+
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              pm_name=$(echo $item | cut -f1 -d:)
+              dep_file=$(echo $item | cut -f2 -d:)
+
+              path=${{ github.workspace }}/$dep_file
+              if [ -f $path ]; then
+                echo $dep_file >> $GITHUB_ENV
+              fi
+            fi
+          done
+
+        if [ ! -z input_files ]; then
+          echo "EOF" >> $GITHUB_ENV
+        fi
+
+    - name: "Check for new changes in dependencies"
+      uses: brettcannon/check-for-changed-files@v1
       with:
-        python-version: "3.10"
-        cache: pip
+        file-pattern: ${{ env.FILE_PATTERN }}
+        failure-message: "No changes in ${ file-pattern }"
 
     - name: Clone Packj repo
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
+
+    - name: Setup python & pip
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: pip
 
     - name: Create virtual environment
       shell: bash
