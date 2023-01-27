@@ -85,9 +85,10 @@ runs:
       shell: bash
       run: source venv/bin/activate
 
-    - name: Install Packj's dependencies
-      shell: bash
-      run: pip3 install -r ./packj/requirements.txt
+    # TODO: uncomment
+    # - name: Install Packj's dependencies
+    #   shell: bash
+    #   run: pip3 install -r ./packj/requirements.txt
 
     - name: Auditing deps with Packj
       shell: bash
