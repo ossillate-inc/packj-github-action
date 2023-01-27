@@ -44,7 +44,7 @@ runs:
 
     - name: Log CHECK_PASSED
       shell: bash
-      run: echo ${{ env.CHECK_PASSED }}
+      run: echo "Logging ${{ env.CHECK_PASSED }}"
 
     - name: Parse dependency files
       if: ${{ env.CHECK_PASSED == true }}
