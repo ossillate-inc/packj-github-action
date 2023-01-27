@@ -152,3 +152,9 @@ runs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: ${{ env.BODY }}
+
+    - name: Comment PR
+      if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: No change in dependencies.
