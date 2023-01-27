@@ -42,10 +42,6 @@ runs:
         echo $passed
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
-    - name: Log CHECK_PASSED
-      shell: bash
-      run: echo "Logging ${{ env.CHECK_PASSED }}"
-
     - name: Parse dependency files
       if: env.CHECK_PASSED == 'true'
       shell: bash
@@ -117,7 +113,7 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          # python3 ./packj/main.py audit -f $input # TODO: uncomment
+          python3 ./packj/main.py audit -f $input 
         fi
 
     - name: Analyze audit report
