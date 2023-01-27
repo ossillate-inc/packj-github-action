@@ -39,11 +39,10 @@ runs:
               passed=true
           fi
         done
-        echo $passed
-        # echo to $GITHUB_ENV
+        echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
     - name: Parse dependency files
-      if: ${{ success() }}
+      if: env.CHECK_PASSED == true
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
@@ -68,29 +67,34 @@ runs:
         fi
 
     - name: Clone Packj repo
+      if: env.CHECK_PASSED == true
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
 
     - name: Setup python & pip
+      if: env.CHECK_PASSED == true
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
         cache: pip
 
     - name: Create virtual environment
+      if: env.CHECK_PASSED == true
       shell: bash
       run: python3 -m venv venv
 
     - name: Activate virtual environment
+      if: env.CHECK_PASSED == true
       shell: bash
       run: source venv/bin/activate
 
-    # TODO: uncomment
-    # - name: Install Packj's dependencies
-    #   shell: bash
-    #   run: pip3 install -r ./packj/requirements.txt
+    - name: Install Packj's dependencies
+      if: env.CHECK_PASSED == true
+      shell: bash
+      run: pip3 install -r ./packj/requirements.txt
 
     - name: Auditing deps with Packj
+      if: env.CHECK_PASSED == true
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
@@ -112,6 +116,7 @@ runs:
         fi
 
     - name: Analyze audit report
+      if: env.CHECK_PASSED == true
       shell: bash
       run: |
         echo "BODY<<EOF" >> $GITHUB_ENV
@@ -129,7 +134,7 @@ runs:
 
     # Create an issue for 'push'
     - name: create issue if ISSUE_REQUIRED is set
-      if: ${{ github.head_ref == '' }}
+      if: ${{ github.head_ref == '' && env.CHECK_PASSED == true }}
       uses: rishabhgupta/git-action-issue@v2
       with:
         token: ${{ inputs.REPO_TOKEN }}
@@ -138,7 +143,7 @@ runs:
 
     # Comment on the PR
     - name: Comment PR
-      if: ${{ github.head_ref }}
+      if: ${{ github.head_ref && env.CHECK_PASSED == true }}
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: ${{ env.BODY }}
