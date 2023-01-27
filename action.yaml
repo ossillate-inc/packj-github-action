@@ -139,7 +139,7 @@ runs:
 
     # Create an issue for 'push'
     - name: create issue if ISSUE_REQUIRED is set
-      if: ${{ github.head_ref == '' && env.CHECK_PASSED == true }}
+      if: ${{ github.head_ref == '' && env.CHECK_PASSED == "true" }}
       uses: rishabhgupta/git-action-issue@v2
       with:
         token: ${{ inputs.REPO_TOKEN }}
@@ -148,7 +148,7 @@ runs:
 
     # Comment on the PR
     - name: Comment PR
-      if: ${{ github.head_ref && env.CHECK_PASSED == true }}
+      if: ${{ github.head_ref && env.CHECK_PASSED == "true" }}
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: ${{ env.BODY }}
