@@ -157,4 +157,5 @@ runs:
       if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
       uses: thollander/actions-comment-pull-request@v2
       with:
-        message: No change in dependencies.
+        message: |
+          **No changes in the dependency files were detected.**
