@@ -39,7 +39,12 @@ runs:
               passed=true
           fi
         done
+        echo $passed
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
+
+    - name: Log CHECK_PASSED
+      shell: bash
+      run: echo ${{ env.CHECK_PASSED }}
 
     - name: Parse dependency files
       if: env.CHECK_PASSED == true
