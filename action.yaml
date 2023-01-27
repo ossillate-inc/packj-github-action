@@ -33,13 +33,14 @@ runs:
     - name: List all changed files
       shell: bash
       run: |
-        changed_files=""
-        echo ${{ steps.changed-files.outputs.all_changed_files }}
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          # echo "$file was changed"
-          changed_files+=$file","
+        passed=false        
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do          
+          if [[ $file == "*package.json*" ]] || [[ $file == "*Gemfile*" ]] || [[ $file == "*requirements.txt*" ]]; then
+              passed=true
+          fi
         done
-        echo $changed_files
+        echo $passed
+        # echo to $GITHUB_ENV
 
     - name: Parse dependency files
       if: ${{ success() }}
