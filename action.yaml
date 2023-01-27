@@ -33,12 +33,16 @@ runs:
     - name: List all changed files
       shell: bash
       run: |
+        changed_files=""
         echo ${{ steps.changed-files.outputs.all_changed_files }}
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          echo "$file was changed"
+          # echo "$file was changed"
+          changed_files+=$file","
         done
+        echo $changed_files
 
     - name: Parse dependency files
+      if: ${{ success() }}
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
@@ -61,12 +65,6 @@ runs:
         if [ ! -z input_files ]; then
           echo "EOF" >> $GITHUB_ENV
         fi
-
-    - name: "Check for new changes in dependencies"
-      uses: brettcannon/check-for-changed-files@v1
-      with:
-        file-pattern: ${{ env.FILE_PATTERN }}
-        failure-message: "No changes in ${ file-pattern }"
 
     - name: Clone Packj repo
       shell: bash
