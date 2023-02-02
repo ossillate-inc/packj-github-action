@@ -33,39 +33,32 @@ runs:
     - name: Detect changed dependencies
       shell: bash
       run: |
-        passed=false        
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do          
-          if [[ $file == *"package.json"* ]] || [[ $file == *"Gemfile"* ]] || [[ $file == *"requirements.txt"* ]]; then
-              passed=true
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input_files=()
+
+        for item in $input; do
+          if [[ $item == *":"* ]]; then
+            dep_file=$(echo $item | cut -f2 -d:)
+            input_files+=$dep_file" "
           fi
         done
+
+        passed=false
+        for changed_file in $changed; do
+          for input_file in $input_files; do
+            if [[ "$changed_file" == "$input_file" ]]; then
+              passed=true
+              break
+            fi
+          done
+
+          if [[ $passed == true ]]; then
+            break
+          fi
+        done
+
         echo $passed
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
-
-    # - name: Parse dependency files
-    #   if: env.CHECK_PASSED == 'true'
-    #   shell: bash
-    #   run: |
-    #     input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
-
-    #     echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
-
-    #     for item in $input
-    #       do
-    #         if [[ $item == *":"* ]]; then
-    #           pm_name=$(echo $item | cut -f1 -d:)
-    #           dep_file=$(echo $item | cut -f2 -d:)
-
-    #           path=${{ github.workspace }}/$dep_file
-    #           if [ -f $path ]; then
-    #             echo $dep_file >> $GITHUB_ENV
-    #           fi
-    #         fi
-    #       done
-
-    #     if [ ! -z input_files ]; then
-    #       echo "EOF" >> $GITHUB_ENV
-    #     fi
 
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
