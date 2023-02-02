@@ -99,6 +99,7 @@ runs:
       shell: bash
       run: |
         cp .packj.yaml ./packj
+        ls -al ./packj
 
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
