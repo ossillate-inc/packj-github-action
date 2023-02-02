@@ -33,8 +33,8 @@ runs:
     - name: Detect changed dependencies
       shell: bash
       run: |
-        passed=false
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+        passed=false        
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do          
           if [[ $file == *"package.json"* ]] || [[ $file == *"Gemfile"* ]] || [[ $file == *"requirements.txt"* ]]; then
               passed=true
           fi
@@ -67,16 +67,16 @@ runs:
           echo "EOF" >> $GITHUB_ENV
         fi
 
-    # - name: Clone Packj repo
-    #   if: env.CHECK_PASSED == 'true'
-    #   shell: bash
-    #   run: git clone https://github.com/ossillate-inc/packj
+    - name: Clone Packj repo
+      if: env.CHECK_PASSED == 'true'
+      shell: bash
+      run: git clone https://github.com/ossillate-inc/packj
 
     - name: Setup python & pip
       if: env.CHECK_PASSED == 'true'
       uses: actions/setup-python@v4
       with:
-        python-version: "3.7"
+        python-version: "3.10"
         cache: pip
 
     - name: Create virtual environment
@@ -89,13 +89,10 @@ runs:
       shell: bash
       run: source venv/bin/activate
 
-    - name: Install Packj
+    - name: Install Packj's dependencies
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: |
-        pip3 install -U pip setuptools
-        pip3 install packj
-        packj --version
+      run: pip3 install -r ./packj/requirements.txt
 
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
@@ -116,7 +113,7 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          packj audit -f $input
+          python3 ./packj/main.py audit -f $input 
         fi
 
     - name: Analyze audit report
