@@ -42,30 +42,30 @@ runs:
         echo $passed
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
-    - name: Parse dependency files
-      if: env.CHECK_PASSED == 'true'
-      shell: bash
-      run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
+    # - name: Parse dependency files
+    #   if: env.CHECK_PASSED == 'true'
+    #   shell: bash
+    #   run: |
+    #     input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
 
-        echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
+    #     echo "FILE_PATTERN<<EOF" >> $GITHUB_ENV
 
-        for item in $input
-          do
-            if [[ $item == *":"* ]]; then
-              pm_name=$(echo $item | cut -f1 -d:)
-              dep_file=$(echo $item | cut -f2 -d:)
+    #     for item in $input
+    #       do
+    #         if [[ $item == *":"* ]]; then
+    #           pm_name=$(echo $item | cut -f1 -d:)
+    #           dep_file=$(echo $item | cut -f2 -d:)
 
-              path=${{ github.workspace }}/$dep_file
-              if [ -f $path ]; then
-                echo $dep_file >> $GITHUB_ENV
-              fi
-            fi
-          done
+    #           path=${{ github.workspace }}/$dep_file
+    #           if [ -f $path ]; then
+    #             echo $dep_file >> $GITHUB_ENV
+    #           fi
+    #         fi
+    #       done
 
-        if [ ! -z input_files ]; then
-          echo "EOF" >> $GITHUB_ENV
-        fi
+    #     if [ ! -z input_files ]; then
+    #       echo "EOF" >> $GITHUB_ENV
+    #     fi
 
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
