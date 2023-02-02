@@ -42,6 +42,7 @@ runs:
             input_files+=$dep_file" "
           fi
         done
+        echo $input_files
 
         passed=false
         for changed_file in $changed; do
