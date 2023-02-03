@@ -91,7 +91,8 @@ runs:
       if: env.CHECK_PASSED == 'true'
       shell: bash
       run: |
-        cp .packj.yaml ./packj
+        mv .packj.yaml ./packj
+        ls -al
         ls -al ./packj
 
     - name: Auditing deps with Packj
