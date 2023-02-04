@@ -23,6 +23,6 @@ jobs:
         env:
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
         with:
-          DEPENDENCY_FILES: pypi:requirements2.txt,pypi:requirements3.txt
+          DEPENDENCY_FILES: pypi:requirements.txt
           REPO_TOKEN: ${{ secrets.TOKEN }}
-          FILES_EXIST: false
+          # FILES_EXIST: false
