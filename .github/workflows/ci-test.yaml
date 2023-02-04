@@ -1,0 +1,28 @@
+name: Test ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create requirements file
+        run: |
+          printf "pytest==7.2.1" > requirements2.txt
+          printf "mock==5.0.1" > requirements3.txt
+
+      - name: Packj Security Audit
+        uses: GytisBraz/packj-github-action@feature/intermediate_files
+        env:
+          PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
+        with:
+          DEPENDENCY_FILES: pypi:requirements2.txt,pypi:requirements3.txt
+          REPO_TOKEN: ${{ secrets.TOKEN }}
+          FILES_EXIST: false
