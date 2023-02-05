@@ -17,7 +17,7 @@ inputs:
   FILES_EXIST:
     description: |
       A boolean indicating whether the dependency files exist in the repository. 
-      Otherwise they are produced in intermediate steps
+      Otherwise they should have been produced in intermediate steps
     required: false
     default: true
   REPO_TOKEN:
