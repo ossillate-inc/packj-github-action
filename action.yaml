@@ -65,6 +65,11 @@ runs:
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
 
+    - name: Copy .packj.yaml
+      if: env.CHECK_PASSED == 'true'
+      shell: bash
+      run: \cp $GITHUB_WORKSPACE/.packj.yaml ./packj # force copy to the cloned `packj` dir
+
     - name: Setup python & pip
       if: env.CHECK_PASSED == 'true'
       uses: actions/setup-python@v4
