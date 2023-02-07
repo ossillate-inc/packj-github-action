@@ -19,7 +19,7 @@ inputs:
       A boolean indicating whether the dependency files exist in the repository. 
       Otherwise they should have been produced in intermediate steps
     required: false
-    default: true
+    default: "true"
   REPO_TOKEN:
     description: Your repo GITHUB_TOKEN
     required: true
