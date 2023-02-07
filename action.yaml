@@ -87,12 +87,6 @@ runs:
       shell: bash
       run: pip3 install -r ./packj/requirements.txt
 
-    - name: Move user-defined .packj.yaml to the cloned `packj` folder
-      if: env.CHECK_PASSED == 'true'
-      shell: bash
-      run: |
-        rm ./packj/.packj.yaml
-
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
       shell: bash
