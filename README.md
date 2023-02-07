@@ -67,6 +67,7 @@ jobs:
 ### Inputs ###
 - **DEPENDENCY_FILES** -- _Packj takes open-source dependency files as input (e.g., npm:package.json). Multiple comma-separated files could be specified. Please see example usage above.
 - **REPO_TOKEN**:  -- specific github token, `secrets.GITHUB_TOKEN` is used by default (Github Action Runner)
+- **FILES_EXIST**: -- an optional boolean parameter specifying if the dependency files are to be found in the repository. If the files are generated during intermediate GitHub action steps, set this to `false`.
 
 # How it works #
 
