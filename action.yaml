@@ -14,6 +14,12 @@ inputs:
   DEPENDENCY_FILES:
     description: A string params passed to Packj for auditing
     required: true
+  FILES_EXIST:
+    description: |
+      A boolean indicating whether the dependency files exist in the repository. 
+      Otherwise they should have been produced in intermediate steps
+    required: false
+    default: true
   REPO_TOKEN:
     description: Your repo GITHUB_TOKEN
     required: true
@@ -22,15 +28,41 @@ runs:
   using: "composite"
 
   steps:
+    # 'save' the dependency files for later if they were generated in intermediate steps
+    # otherwise they would be lost after the 'actions/checkout' step
+    - name: Save intermediate files
+      if: ${{ inputs.FILES_EXIST == 'false' }}
+      shell: bash
+      run: |
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
+
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              dep_file=$(echo $item | cut -f2 -d:)
+              mv $dep_file $HOME/$dep_file
+            fi
+          done
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Check out repository code
       uses: actions/checkout@v3
 
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v35
+    - name: Load intermediate files
+      if: ${{ inputs.FILES_EXIST == 'false' }}
+      shell: bash
+      run: |
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
 
-    - name: Detect changed dependencies
+        for item in $input
+          do
+            if [[ $item == *":"* ]]; then
+              dep_file=$(echo $item | cut -f2 -d:)
+              mv $HOME/$dep_file ./$dep_file
+            fi
+          done
+
+    - name: Parse dependency files
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
@@ -57,8 +89,12 @@ runs:
           fi
         done
 
-        echo "Detect changed dependencies -> CHECK_PASSED: $passed"
-        echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
+    - name: "Check for new changes in dependencies"
+      if: ${{ inputs.FILES_EXIST == 'true' }}
+      uses: brettcannon/check-for-changed-files@v1
+      with:
+        file-pattern: ${{ env.FILE_PATTERN }}
+        failure-message: "No changes in ${ file-pattern }"
 
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
@@ -106,7 +142,8 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          python3 ./packj/main.py audit -f $input 
+          cd packj
+          python3 ./main.py audit -f $input
         fi
 
     - name: Analyze audit report
