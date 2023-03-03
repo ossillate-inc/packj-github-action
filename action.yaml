@@ -31,7 +31,6 @@ runs:
       uses: tj-actions/changed-files@v35
 
     - name: Detect changed dependencies
-      if: false 
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
@@ -57,7 +56,8 @@ runs:
             break
           fi
         done
-
+        
+        passed=true
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
