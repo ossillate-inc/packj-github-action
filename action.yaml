@@ -152,4 +152,4 @@ runs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: |
-          <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj</h2> **:white_check_mark: No new dependencies are introduced**
+          <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> :white_check_mark: **No new dependencies are introduced**
