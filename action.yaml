@@ -31,6 +31,7 @@ runs:
       uses: tj-actions/changed-files@v35
 
     - name: Detect changed dependencies
+      if: false 
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
@@ -145,7 +146,7 @@ runs:
       if: ${{ github.head_ref && env.CHECK_PASSED == 'true' }}
       uses: thollander/actions-comment-pull-request@v2
       with:
-        message: ${{ env.BODY }}
+        message: <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> ${{ env.BODY }}
 
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
