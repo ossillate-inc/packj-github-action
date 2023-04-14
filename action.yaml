@@ -71,7 +71,13 @@ runs:
       if: env.CHECK_PASSED == 'true'
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
- 
+      
+    - name: Check for .packj.yaml in the repo
+      id: check_files1
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "packj/.packj.yaml"
+        
     - name: Copy .packj.yaml from the repo
       if: env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true'
       shell: bash
