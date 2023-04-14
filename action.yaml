@@ -66,8 +66,14 @@ runs:
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
 
-    - name: Copy .packj.yaml
-      if: env.CHECK_PASSED == 'true'
+    - name: Check for .packj.yaml file in the repo
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "$GITHUB_WORKSPACE/.packj.yaml"
+ 
+    - name: Copy .packj.yaml from the repo
+      if: env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true'
       shell: bash
       run: \cp $GITHUB_WORKSPACE/.packj.yaml ./packj # force copy to the cloned `packj` dir
 
