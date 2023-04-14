@@ -61,15 +61,21 @@ runs:
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
+    - name: Check for .packj.yaml file in the repo
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "$GITHUB_WORKSPACE/.packj.yaml"
+        
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
       shell: bash
       run: git clone https://github.com/ossillate-inc/packj
-
-    - name: Copy .packj.yaml
-      if: env.CHECK_PASSED == 'true'
+        
+    - name: Copy .packj.yaml from the repo
+      if: env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true'
       shell: bash
-      run: \cp $GITHUB_WORKSPACE/.packj.yaml ./packj # force copy to the cloned `packj` dir
+      run: cp $GITHUB_WORKSPACE/.packj.yaml packj/.
 
     - name: Setup python & pip
       if: env.CHECK_PASSED == 'true'
@@ -112,7 +118,7 @@ runs:
           done
         if [ ! -z input_files ]; then
           input=$(echo $input_files | sed 's/,/ /g')
-          python3 ./packj/main.py audit -f $input 
+          cd ./packj && python3 main.py audit -f $input 
         fi
 
     - name: Analyze audit report
