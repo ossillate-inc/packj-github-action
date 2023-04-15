@@ -58,6 +58,7 @@ runs:
             fi
           done
           if [[ $passed == true ]]; then
+            echo "Detect new dependencies: $audit_files"
             echo "AUDIT_DEP_FILES=$audit_files" >> $GITHUB_ENV
             break
           fi
