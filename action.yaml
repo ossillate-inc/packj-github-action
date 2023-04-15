@@ -36,26 +36,32 @@ runs:
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
         echo ${{ steps.changed-files.outputs.all_changed_files }}
         input_files=()
+        audit_files=()
         for item in $input; do
           if [[ $item == *":"* ]]; then
             pm_name=$(echo $item | cut -f1 -d:)
             dep_file=$(echo $item | cut -f2 -d:)
             path=${{ github.workspace }}/$dep_file
-            if [ ! -f $path ]; then
-              continue
+            if [ -f $path ]; then
+              input_files+=$path
+              audit_files+=$pm_name":"$path" "
             fi
-            #if [[ ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
-            #  input_files+=$pm_name":"$path" "
-            #fi
           fi
         done
         
-        echo $input_files
         passed=false
-        if (( ${#input_files[@]} == 0 )); then
-          passed=true
-          echo "AUDIT_DEP_FILES=$input_files" >> $GITHUB_ENV
-        fi
+        for changed_file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          for input_file in $input_files; do
+            if [[ "$changed_file" == "$input_file" ]]; then
+              passed=true
+              break
+            fi
+          done
+          if [[ $passed == true ]]; then
+            echo "AUDIT_DEP_FILES=$audit_files" >> $GITHUB_ENV
+            break
+          fi
+        done
   
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
