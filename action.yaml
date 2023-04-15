@@ -62,6 +62,7 @@ runs:
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
     - name: Check for .packj.yaml file in the repo
+      if: env.CHECK_PASSED == 'true'
       id: check_files
       uses: andstor/file-existence-action@v2
       with:
