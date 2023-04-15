@@ -44,9 +44,9 @@ runs:
             if [ ! -f $path ]; then
               continue
             fi
-            if [[ ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
-              input_files+=$pm_name":"$path" "
-            fi
+            #if [[ ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
+            #  input_files+=$pm_name":"$path" "
+            #fi
           fi
         done
         
