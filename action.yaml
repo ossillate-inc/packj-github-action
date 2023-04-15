@@ -40,7 +40,10 @@ runs:
             pm_name=$(echo $item | cut -f1 -d:)
             dep_file=$(echo $item | cut -f2 -d:)
             path=${{ github.workspace }}/$dep_file
-            if [[ -f $path && ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
+            if [ ! -f $path ]; then
+              continue
+            fi
+            if [[ ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
               input_files+=$pm_name":"$path" "
             fi
           fi
