@@ -71,7 +71,10 @@ runs:
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: git clone https://github.com/ossillate-inc/packj
+      run: |
+        pwd
+        ls
+        git clone https://github.com/ossillate-inc/packj
         
     - name: Copy .packj.yaml from the repo
       if: ${{ env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true' }}
