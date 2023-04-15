@@ -106,7 +106,7 @@ runs:
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: ./packj-tool && python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }}
+      run: cd ./packj-tool && python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }}
 
     - name: Analyze audit report
       if: env.CHECK_PASSED == 'true'
