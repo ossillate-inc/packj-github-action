@@ -33,7 +33,8 @@ runs:
     - name: Detect changed dependencies
       shell: bash
       run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
+        echo ${{ steps.changed-files.outputs.all_changed_files }}
         input_files=()
         for item in $input; do
           if [[ $item == *":"* ]]; then
@@ -53,6 +54,7 @@ runs:
         passed=false
         if (( ${#input_files[@]} == 0 )); then
           passed=true
+          echo "AUDIT_DEP_FILES=$input_files" >> $GITHUB_ENV
         fi
   
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
