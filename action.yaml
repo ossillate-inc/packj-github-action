@@ -35,29 +35,23 @@ runs:
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
         input_files=()
-
         for item in $input; do
           if [[ $item == *":"* ]]; then
+            pm_name=$(echo $item | cut -f1 -d:)
             dep_file=$(echo $item | cut -f2 -d:)
-            input_files+=$dep_file" "
-          fi
-        done
-
-        passed=false
-        for changed_file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          for input_file in $input_files; do
-            if [[ "$changed_file" == "$input_file" ]]; then
-              passed=true
-              break
+            path=${{ github.workspace }}/$dep_file
+            if [[ -f $path && ${{ steps.changed-files.outputs.all_changed_files }} =~ (^|[[:space:]])"$path"($|[[:space:]]) ]]; then
+              input_files+=$pm_name":"$path" "
             fi
-          done
-
-          if [[ $passed == true ]]; then
-            break
           fi
         done
         
-        passed=true
+        echo $input_files
+        passed=false
+        if (( ${#input_files[@]} == 0 )); then
+          passed=true
+        fi
+  
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
@@ -71,12 +65,16 @@ runs:
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: git clone https://github.com/ossillate-inc/packj packj-tool
+      run: |
+        git clone https://github.com/ossillate-inc/packj packj-tool
+        echo "Packj repo cloned as packj-tool"
         
     - name: Copy .packj.yaml from the repo
       if: ${{ env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true' }}
       shell: bash
-      run: cp .packj.yaml packj-tool/.
+      run: |
+        echo ".packj.yaml found in the repo -> Copying it to packj-tool"
+        cp .packj.yaml packj-tool/.
 
     - name: Setup python & pip
       if: env.CHECK_PASSED == 'true'
@@ -103,24 +101,7 @@ runs:
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
-        input_files=()
-        for item in $input
-          do
-            if [[ $item == *":"* ]]; then
-              pm_name=$(echo $item | cut -f1 -d:)
-              dep_file=$(echo $item | cut -f2 -d:)
-              path=${{ github.workspace }}/$dep_file
-              if [ -f $path ]; then
-                input_files+=$pm_name":"$path,
-              fi
-            fi
-          done
-        if [ ! -z input_files ]; then
-          input=$(echo $input_files | sed 's/,/ /g')
-          cd ./packj-tool && python3 main.py audit -f $input 
-        fi
+      run: ./packj-tool && python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }}
 
     - name: Analyze audit report
       if: env.CHECK_PASSED == 'true'
