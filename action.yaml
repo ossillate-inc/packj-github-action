@@ -42,7 +42,7 @@ runs:
             dep_file=$(echo $item | cut -f2 -d:)
             path=${{ github.workspace }}/$dep_file
             if [ -f $path ]; then
-              input_files+=$path" "
+              input_files+=$dep_file" "
               audit_files+=$pm_name":"$path" "
             fi
           fi
