@@ -34,7 +34,7 @@ runs:
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
-        echo ${{ steps.changed-files.outputs.all_changed_files }}
+        echo "Files changed: "${{ steps.changed-files.outputs.all_changed_files }}
         input_files=()
         audit_files=()
         for item in $input; do
@@ -50,6 +50,8 @@ runs:
         done
         
         passed=false
+        echo "Input files: "$input_files
+        echo "Audit files: "$audit_files
         for changed_file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           for input_file in $input_files; do
             if [[ "$changed_file" == "$input_file" ]]; then
