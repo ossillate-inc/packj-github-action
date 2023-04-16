@@ -33,15 +33,24 @@ runs:
     - name: Detect changed dependencies
       shell: bash
       run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
+        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
         input_files=()
-
+        audit_files=()
         for item in $input; do
           if [[ $item == *":"* ]]; then
+            pm_name=$(echo $item | cut -f1 -d:)
             dep_file=$(echo $item | cut -f2 -d:)
-            input_files+=$dep_file" "
+            path=${{ github.workspace }}/$dep_file
+            if [ -f $path ]; then
+              input_files+=$dep_file" "
+              audit_files+=$pm_name":"$path" "
+            fi
           fi
         done
+        
+        echo "Input files: "$input_files
+        echo "Audit files: "$audit_files
+        echo "Files changed: "${{ steps.changed-files.outputs.all_changed_files }}
 
         passed=false
         for changed_file in ${{ steps.changed-files.outputs.all_changed_files }}; do
@@ -51,13 +60,13 @@ runs:
               break
             fi
           done
-
           if [[ $passed == true ]]; then
+            echo "Detected new dependencies: $audit_files"
+            echo "AUDIT_DEP_FILES=$audit_files" >> $GITHUB_ENV
             break
           fi
         done
-        
-        passed=true
+  
         echo "Detect changed dependencies -> CHECK_PASSED: $passed"
         echo "CHECK_PASSED=$passed" >> $GITHUB_ENV
 
@@ -66,17 +75,21 @@ runs:
       id: check_files
       uses: andstor/file-existence-action@v2
       with:
-        files: "$GITHUB_WORKSPACE/.packj.yaml"
+        files: ".packj.yaml"
         
     - name: Clone Packj repo
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: git clone https://github.com/ossillate-inc/packj
+      run: |
+        git clone https://github.com/ossillate-inc/packj packj-tool
+        echo "Packj repo cloned as packj-tool"
         
     - name: Copy .packj.yaml from the repo
       if: ${{ env.CHECK_PASSED == 'true' && steps.check_files.outputs.files_exists == 'true' }}
       shell: bash
-      run: cp $GITHUB_WORKSPACE/.packj.yaml packj/.
+      run: |
+        echo ".packj.yaml found in the repo -> Copying it to packj-tool"
+        cp .packj.yaml packj-tool/.
 
     - name: Setup python & pip
       if: env.CHECK_PASSED == 'true'
@@ -98,29 +111,12 @@ runs:
     - name: Install Packj's dependencies
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: pip3 install -r ./packj/requirements.txt
+      run: pip3 install -r ./packj-tool/requirements.txt
 
     - name: Auditing deps with Packj
       if: env.CHECK_PASSED == 'true'
       shell: bash
-      run: |
-        input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g') 
-        input_files=()
-        for item in $input
-          do
-            if [[ $item == *":"* ]]; then
-              pm_name=$(echo $item | cut -f1 -d:)
-              dep_file=$(echo $item | cut -f2 -d:)
-              path=${{ github.workspace }}/$dep_file
-              if [ -f $path ]; then
-                input_files+=$pm_name":"$path,
-              fi
-            fi
-          done
-        if [ ! -z input_files ]; then
-          input=$(echo $input_files | sed 's/,/ /g')
-          cd ./packj && python3 main.py audit -f $input 
-        fi
+      run: cd ./packj-tool && python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }}
 
     - name: Analyze audit report
       if: env.CHECK_PASSED == 'true'
@@ -135,7 +131,7 @@ runs:
         fi
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-        echo "Triggered by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
+        echo "<h6>Triggered by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a></h6>"  >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
         echo "TITLE=Packj audit found risky dependencies!" >> $GITHUB_ENV
 
@@ -160,4 +156,6 @@ runs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         message: |
-          <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> <h3>:white_check_mark: No new dependencies are introduced</h3>
+          <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2>
+          <h4>:white_check_mark: No new dependencies are introduced</h4>
+          <h6>Triggered by <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">workflow run ${{ github.run_number }}</a> on commit <a href="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></h6>
