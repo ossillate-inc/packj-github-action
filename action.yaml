@@ -131,7 +131,7 @@ runs:
         fi
         run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         commit_link="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-        echo "Triggered by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a>"  >> $GITHUB_ENV
+        echo "<h6>Triggered by <a href=$run_url>workflow run ${{ github.run_number }}</a> on commit <a href=$commit_link>${{ github.sha }}</a></h6>"  >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
         echo "TITLE=Packj audit found risky dependencies!" >> $GITHUB_ENV
 
@@ -159,4 +159,3 @@ runs:
           <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2>
           <h4>:white_check_mark: No new dependencies are introduced</h4>
           <h6>Triggered by <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">workflow run ${{ github.run_number }}</a> on commit <a href="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></h6>
-        
