@@ -118,9 +118,7 @@ runs:
       shell: bash
       run: |
         cd ./packj-tool
-        python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }} -t << EOF
-        Y
-        EOF
+        echo 'y' | python3 main.py audit -f ${{ env.AUDIT_DEP_FILES }} -t
 
     - name: Analyze audit report
       if: env.CHECK_PASSED == 'true'
