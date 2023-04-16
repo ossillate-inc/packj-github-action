@@ -34,7 +34,6 @@ runs:
       shell: bash
       run: |
         input=$(echo "${{ inputs.DEPENDENCY_FILES }}" | sed 's/,/ /g')
-        echo "Files changed: "${{ steps.changed-files.outputs.all_changed_files }}
         input_files=()
         audit_files=()
         for item in $input; do
@@ -43,15 +42,17 @@ runs:
             dep_file=$(echo $item | cut -f2 -d:)
             path=${{ github.workspace }}/$dep_file
             if [ -f $path ]; then
-              input_files+=$path
+              input_files+=$path" "
               audit_files+=$pm_name":"$path" "
             fi
           fi
         done
         
-        passed=false
         echo "Input files: "$input_files
         echo "Audit files: "$audit_files
+        echo "Files changed: "${{ steps.changed-files.outputs.all_changed_files }}
+
+        passed=false
         for changed_file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           for input_file in $input_files; do
             if [[ "$changed_file" == "$input_file" ]]; then
@@ -60,7 +61,7 @@ runs:
             fi
           done
           if [[ $passed == true ]]; then
-            echo "Detect new dependencies: $audit_files"
+            echo "Detected new dependencies: $audit_files"
             echo "AUDIT_DEP_FILES=$audit_files" >> $GITHUB_ENV
             break
           fi
