@@ -56,7 +56,7 @@ jobs:
 
       # Audit 
       - name: Audit dependencies
-        uses: ossillate-inc/packj-github-action@0.0.4-beta
+        uses: ossillate-inc/packj-github-action@v0.0.11-beta
         with:
           # TODO: replace with your dependency files in the repo
           DEPENDENCY_FILES: pypi:requirements.txt,npm:package.json,rubygems:Gemfile
