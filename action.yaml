@@ -155,7 +155,7 @@ runs:
 
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
-      uses: actions/github-script@v2.1.0
+      uses: actions/github-script@v6.4.1
       with:
         script: |
           github.rest.issues.createComment({
