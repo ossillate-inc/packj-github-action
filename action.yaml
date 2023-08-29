@@ -149,15 +149,15 @@ runs:
     # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'true' }}
-      uses: thollander/actions-comment-pull-request@v2
+      uses: actions/github-script@v2.1.0
       with:
-        message: <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> ${{ env.BODY }}
+        script: <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> ${{ env.BODY }}
 
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
-      uses: thollander/actions-comment-pull-request@v2
+      uses: actions/github-script@v2.1.0
       with:
-        message: |
+        script: |
           <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2>
           <h4>:white_check_mark: No new dependencies are introduced</h4>
           <h6>Triggered by <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">workflow run ${{ github.run_number }}</a> on commit <a href="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></h6>
