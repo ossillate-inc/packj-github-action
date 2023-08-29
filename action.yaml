@@ -149,9 +149,16 @@ runs:
     # Comment on the PR
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'true' }}
-      uses: actions/github-script@v2.1.0
+      uses: actions/github-script@v6.4.1
       with:
-        script: <h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> ${{ env.BODY }}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `<h2><img src="https://packj.dev/static/img/packj-factory-logo.svg" width="24" alt="Packj"> Packj Audit Report</h2> ${{ env.BODY }}`
+          })
+          
 
     - name: Comment PR
       if: ${{ github.head_ref && env.CHECK_PASSED == 'false' }}
